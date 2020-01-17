@@ -1,0 +1,43 @@
+route:
+  repeat_interval: 2h
+  receiver: email_warning
+  routes:
+    - match:
+        severity: warning
+      receiver: email_warning
+
+    - match:
+        severity: critical
+      continue: true
+      receiver: email_critical
+
+    - match:
+        severity: critical
+      receiver: slack
+
+receivers:
+- name: 'email_warning'
+  email_configs:
+  - to: <to-email>
+    from: <from-email>
+    smarthost: <smtp:port>
+    auth_username: "<user-name>"
+    auth_identity: "<user-name>"
+    auth_password: "<user-app-specific-password>"
+
+- name: 'email_critical'
+  email_configs:
+    - to: <to-email>
+      from: <from-email>
+      smarthost: <smtp:port>
+      auth_username: "<user-name>"
+      auth_identity: "<user-name>"
+      auth_password: "<user-app-specific-password>"
+      send_resolved: true
+
+- name: 'slack'
+  slack_configs:
+    - api_url: 'https://hooks.slack.com/services/XXXXX/XXXXXX/XXXXXXXXXXXXXXXXX'
+      channel: '#alerts'
+      text: "<!channel> \n summary: {{ .CommonAnnotations.summary }}\n description: {{ .CommonAnnotations.description }}"
+      send_resolved: true

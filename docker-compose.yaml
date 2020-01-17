@@ -1,0 +1,35 @@
+version: "3.7"
+
+networks:
+     monitor-net:
+        name: monitor-net
+
+services:
+  prometheus:
+    build:
+      dockerfile: ./prometheus/Dockerfile
+      context: ./
+      args:
+        BRANCH: "develop"
+    ports:
+      - "9090:9090"
+    networks:
+      - monitor-net
+
+  alertmanager:
+    build:
+      dockerfile: ./alertmanager/Dockerfile
+      context: ./
+    ports:
+      - "9093:9093"
+    networks:
+      - monitor-net
+
+  grafana:
+    build:
+      dockerfile: ./grafana/Dockerfile
+      context: ./
+    ports:
+      - "3000:3000"
+    networks:
+      - monitor-net
